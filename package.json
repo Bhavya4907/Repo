@@ -1,0 +1,23 @@
+{
+  "name": "mongo-redis-agentmesh",
+  "version": "1.0.0",
+  "description": "Zero-dependency Redis-compatible server & MongoDB-backed context synchronization mesh for distributed multi-agent systems with conflict detection and automated resolution",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "simulate": "node src/simulation/run-simulation.js",
+    "test": "node src/tests/test-mesh.js"
+  },
+  "keywords": [
+    "redis",
+    "mongodb",
+    "multi-agent",
+    "context-mesh",
+    "conflict-resolution",
+    "distributed-systems",
+    "resp-protocol"
+  ],
+  "author": "Antigravity Agent",
+  "license": "MIT"
+}

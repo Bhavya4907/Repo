@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MongoRedis AgentMesh - Multi-Agent Codebase Sync & Conflict Resolver</title>
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-brand">
+      <div class="logo-badge">⚡ MESH</div>
+      <div>
+        <h1>MongoRedis AgentMesh</h1>
+        <p class="subtitle">Distributed Codebase Context Pool & Conflict Resolution Engine</p>
+      </div>
+    </div>
+    <div class="cluster-status">
+      <div class="status-chip" id="ws-status"><span class="indicator live"></span> WS Live</div>
+      <div class="status-chip" id="redis-status"><span class="indicator live"></span> Redis TCP: 6379</div>
+      <div class="status-chip" id="mongo-status"><span class="indicator live"></span> MongoDB Store</div>
+      <button class="btn btn-primary" id="btn-trigger-sim">🚀 Run 4-Agent Simulation</button>
+    </div>
+  </header>
+
+  <main class="dashboard-grid">
+    <!-- Stat Cards -->
+    <section class="stats-row">
+      <div class="card stat-card">
+        <div class="stat-icon">🤖</div>
+        <div class="stat-body">
+          <div class="stat-value" id="stat-agents">0</div>
+          <div class="stat-label">Active Agents</div>
+        </div>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-icon">📁</div>
+        <div class="stat-body">
+          <div class="stat-value" id="stat-files">0</div>
+          <div class="stat-label">Tracked Files</div>
+        </div>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-icon">🔒</div>
+        <div class="stat-body">
+          <div class="stat-value" id="stat-intents">0</div>
+          <div class="stat-label">Active Intent Locks</div>
+        </div>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-icon">⚔️</div>
+        <div class="stat-body">
+          <div class="stat-value highlight-warn" id="stat-conflicts">0</div>
+          <div class="stat-label">Pending Conflicts</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Top Row: Agents across machines & Active Intents -->
+    <div class="columns-2">
+      <!-- Agent Fleet -->
+      <section class="card panel">
+        <div class="panel-header">
+          <h2>🌐 Distributed Agent Fleet (Cross-Machine)</h2>
+          <span class="badge" id="agent-count-badge">0 connected</span>
+        </div>
+        <div class="panel-body">
+          <div id="agents-list" class="agents-grid">
+            <div class="empty-state">No agents registered yet. Run simulation or connect an agent.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Active Intent Leases (Conflict Avoidance) -->
+      <section class="card panel">
+        <div class="panel-header">
+          <h2>🛡️ Active Intent Leases (Conflict Avoidance)</h2>
+          <button class="btn btn-sm btn-outline" id="btn-refresh-intents">Refresh</button>
+        </div>
+        <div class="panel-body">
+          <div id="intents-list" class="intents-container">
+            <div class="empty-state">No active intent locks. Files are free to edit.</div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Middle: Conflicts and Resolution Center -->
+    <section class="card panel panel-warning" id="conflict-panel">
+      <div class="panel-header">
+        <h2>🚨 Conflict Detection & Automated Resolution Engine</h2>
+        <span class="badge badge-alert" id="conflict-badge">0 Pending</span>
+      </div>
+      <div class="panel-body">
+        <div id="conflicts-container">
+          <div class="empty-state success">
+            ✅ All code changes harmonized! Common context pool is conflict-free.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bottom: Codebase Files & API Contracts -->
+    <div class="columns-2">
+      <!-- Shared Context Files Explorer -->
+      <section class="card panel">
+        <div class="panel-header">
+          <h2>📦 Shared Context Pool (Codebase Tree)</h2>
+          <span class="hint">Synced across all machines</span>
+        </div>
+        <div class="panel-body">
+          <div id="files-list" class="files-list"></div>
+          <div class="code-preview-pane">
+            <div class="code-header">
+              <span id="preview-filename">Select a file above</span>
+              <span id="preview-hash" class="code-meta"></span>
+            </div>
+            <pre id="code-preview"><code>// Select a file to inspect current canonical content in the shared context pool</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- Cross-Layer Contracts & Interactive Redis Console -->
+      <div class="flex-column gap-16">
+        <!-- Contracts -->
+        <section class="card panel">
+          <div class="panel-header">
+            <h2>🔗 Cross-Layer Contracts (Frontend ↔ Backend)</h2>
+          </div>
+          <div class="panel-body">
+            <div id="contracts-list" class="contracts-list"></div>
+          </div>
+        </section>
+
+        <!-- Redis Terminal -->
+        <section class="card panel">
+          <div class="panel-header">
+            <h2>⚡ Interactive Redis CLI (Over MongoDB Engine)</h2>
+            <span class="hint">Type PING, SET, GET, KEYS, PUBLISH</span>
+          </div>
+          <div class="panel-body">
+            <div class="terminal" id="terminal-output">
+              <div class="term-line term-system">Connected to MongoRedis Mesh RESP Engine.</div>
+              <div class="term-line term-system">Try: SET demo "Hello Agents" or GET demo</div>
+            </div>
+            <form id="redis-form" class="terminal-input-bar">
+              <span class="term-prompt">redis&gt;</span>
+              <input type="text" id="redis-input" placeholder="e.g. SET team:goal 'Avoid all merge conflicts' EX 60" autocomplete="off" />
+              <button type="submit" class="btn btn-sm btn-primary">Run</button>
+            </form>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- Live Event Stream Log -->
+    <section class="card panel">
+      <div class="panel-header">
+        <h2>📡 Live Real-Time Event Bus (Pub/Sub + WebSockets)</h2>
+        <button class="btn btn-sm btn-outline" id="btn-clear-logs">Clear</button>
+      </div>
+      <div class="panel-body">
+        <div id="event-log" class="event-log"></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>
